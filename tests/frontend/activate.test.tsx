@@ -90,3 +90,15 @@ describe(`${manifest.id} frontend`, () => {
     );
   });
 });
+
+describe("terminal companion", () => {
+  it("has a showPanel host setting and companion user settings", () => {
+    const settings = manifest.contributes.settings as {
+      host: { fields: Array<{ key: string }> };
+      user: Array<{ key: string }>;
+    };
+    expect(settings.host.fields.map((f) => f.key)).toContain("showPanel");
+    expect(settings.user.map((f) => f.key)).toContain("companionSide");
+    expect(locales.companion.toggle).toBeTruthy();
+  });
+});
