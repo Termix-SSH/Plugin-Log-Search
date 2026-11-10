@@ -6,6 +6,12 @@
 
 <p>Search logs from the journal, log files and Docker containers across many hosts at once</p>
 
+<!-- VIDEO:START -->
+
+<a href="https://www.youtube.com/watch?v=uLpB2uLI_FY"><img src="https://img.shields.io/badge/Watch_the_demo-f59145?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch the demo on YouTube" /></a>
+
+<!-- VIDEO:END -->
+
 </div>
 
 <br />
