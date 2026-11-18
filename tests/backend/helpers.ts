@@ -64,6 +64,7 @@ export async function startServer(
 ): Promise<TestServer> {
   let router: Router | null = null;
   const mock = createMockCtx({
+    sandbox: true,
     pluginId: manifest.id,
     manifest,
     capabilities: manifest.capabilities,
