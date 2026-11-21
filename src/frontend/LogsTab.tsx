@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
   Copy,
@@ -38,7 +38,14 @@ import {
   type SearchableHost,
   type Source,
 } from "../shared/types";
-import { errorMessage, listHosts, listSaved, search } from "./api";
+import {
+  cancelSearch,
+  errorMessage,
+  listHosts,
+  listSaved,
+  newRunId,
+  search,
+} from "./api";
 import { SavedEditor } from "./SavedEditor";
 import { useFollow } from "./useFollow";
 import {
@@ -76,6 +83,9 @@ export function LogsTab({ isVisible }: { isVisible: boolean }) {
   const [origin, setOrigin] = useState("");
   const [sources, setSources] = useState<Set<Source>>(new Set(SOURCES));
   const [busy, setBusy] = useState(false);
+  const running = useRef<{ runId: string; controller: AbortController } | null>(
+    null,
+  );
   const [error, setError] = useState("");
   const [result, setResult] = useState<SearchResponse | null>(null);
   const [shown, setShown] = useState({ query: "", regex: false, cs: false });
@@ -144,30 +154,49 @@ export function LogsTab({ isVisible }: { isVisible: boolean }) {
   };
 
   const run = useCallback(async () => {
+    const current = { runId: newRunId(), controller: new AbortController() };
+    running.current = current;
     setBusy(true);
     setError("");
     try {
       const now = Date.now();
-      const response = await search({
-        query: query.trim(),
-        regex,
-        caseSensitive,
-        hostIds: [...picked],
-        sources: [...sources],
-        from: now - rangeMs(range),
-        to: now,
-        level,
-        origin: origin.trim(),
-        limit: 500,
-      });
+      const response = await search(
+        {
+          query: query.trim(),
+          regex,
+          caseSensitive,
+          hostIds: [...picked],
+          sources: [...sources],
+          from: now - rangeMs(range),
+          to: now,
+          level,
+          origin: origin.trim(),
+          limit: 500,
+        },
+        { runId: current.runId, signal: current.controller.signal },
+      );
+      if (running.current !== current) return;
       setResult(response);
       setShown({ query: query.trim(), regex, cs: caseSensitive });
     } catch (e) {
+      if (running.current !== current) return;
       setError(errorMessage(e, t("tab.searchFailed")));
     } finally {
-      setBusy(false);
+      if (running.current === current) {
+        running.current = null;
+        setBusy(false);
+      }
     }
   }, [query, regex, caseSensitive, picked, sources, range, level, origin, t]);
+
+  const stop = useCallback(() => {
+    const current = running.current;
+    if (!current) return;
+    running.current = null;
+    setBusy(false);
+    current.controller.abort();
+    void cancelSearch(current.runId).catch(() => {});
+  }, []);
 
   const toggleSource = (source: Source) =>
     setSources((current) => {
@@ -297,13 +326,19 @@ export function LogsTab({ isVisible }: { isVisible: boolean }) {
                 maxLength={200}
                 className="flex-1"
               />
-              <Button
-                type="button"
-                disabled={busy || !!followReq}
-                onClick={() => void run()}
-              >
-                <Search /> {t("search.run")}
-              </Button>
+              {busy ? (
+                <Button type="button" variant="outline" onClick={stop}>
+                  <Square /> {t("search.stop")}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  disabled={!!followReq}
+                  onClick={() => void run()}
+                >
+                  <Search /> {t("search.run")}
+                </Button>
+              )}
               <Button
                 type="button"
                 variant={followReq ? "default" : "outline"}

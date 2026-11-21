@@ -15,6 +15,7 @@
     "placeholder": "Szukaj w dziennikach",
     "run": "Szukaj",
     "running": "Wyszukiwanie...",
+    "stop": "Zatrzymaj",
     "regex": "Wyrażenie regularne",
     "case": "Uwzględnij wielkość liter",
     "range": "Zakres czasu",

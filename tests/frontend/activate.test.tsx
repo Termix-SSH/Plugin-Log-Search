@@ -121,6 +121,7 @@ describe(`${manifest.id} frontend`, () => {
     expect(post).toHaveBeenCalledWith(
       "/search",
       expect.objectContaining({ query: "timed", sources: expect.any(Array) }),
+      expect.objectContaining({ signal: expect.anything() }),
     );
   });
 });
@@ -139,7 +140,41 @@ describe("sandboxed frame", () => {
     expect(post).toHaveBeenCalledWith(
       "/search",
       expect.objectContaining({ query: "session" }),
+      expect.objectContaining({ signal: expect.anything() }),
     );
+  });
+});
+
+describe("stopping a search", () => {
+  it("shows Stop while searching and cancels it on the server", async () => {
+    let finish: (value: { data: unknown }) => void = () => {};
+    const slowPost = vi.fn((path: string) =>
+      path === "/search"
+        ? new Promise<{ data: unknown }>((resolve) => {
+            finish = resolve;
+          })
+        : Promise.resolve({ data: { cancelled: true } }),
+    );
+    const slowApi = { ...(api as object), post: slowPost } as never;
+    rendered = await renderWithApp(plugin, { manifest, locales, api: slowApi });
+    rendered.renderTab("log-search", { isVisible: true });
+    fireEvent.change(await screen.findByPlaceholderText("Search logs"), {
+      target: { value: "slow" },
+    });
+    fireEvent.click(screen.getByText("Search"));
+    fireEvent.click(await screen.findByRole("button", { name: /Stop/ }));
+    const [, body, config] = slowPost.mock.calls[0] as unknown as [
+      string,
+      { runId: string },
+      { signal: AbortSignal },
+    ];
+    expect(config.signal.aborted).toBe(true);
+    expect(slowPost).toHaveBeenCalledWith("/search/cancel", {
+      runId: body.runId,
+    });
+    finish({ data: result });
+    expect(await screen.findByRole("button", { name: /Search/ })).toBeTruthy();
+    expect(screen.queryByText("nginx.service")).toBeNull();
   });
 });
 

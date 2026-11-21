@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+### Added
+
+- Stop a running search with the Stop button
+
 ## 1.2.1
 
 ### Fixed

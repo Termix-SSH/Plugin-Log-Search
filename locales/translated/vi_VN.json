@@ -12,6 +12,7 @@
     "placeholder": "Tìm kiếm nhật ký",
     "run": "Tìm kiếm",
     "running": "Đang tìm kiếm...",
+    "stop": "Dừng",
     "regex": "Regex",
     "case": "Phân biệt chữ hoa/thường",
     "range": "Khoảng thời gian",

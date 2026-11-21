@@ -49,6 +49,12 @@
       "filtered": true,
       "note": "Searches only hosts the caller may see"
     },
+    "POST /plugin-api/log-search/search/cancel": {
+      "access": "user",
+      "permission": "log-search.use",
+      "body": { "runId": "authz-run-0001" },
+      "note": "Stops only a search the caller started"
+    },
     "GET /plugin-api/log-search/saved": {
       "access": "user",
       "permission": "log-search.use",

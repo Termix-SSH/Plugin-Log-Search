@@ -205,3 +205,43 @@ describe("POST /search", () => {
     }
   });
 });
+
+describe("POST /search/cancel", () => {
+  it("stops a running search before it reaches more hosts", async () => {
+    let release = () => {};
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const reached = new Set<number>();
+    server = await startServer({
+      hosts: Array.from({ length: 8 }, (_, i) => host(i + 1, `h${i + 1}`)),
+      exec: async (hostId: number) => {
+        reached.add(hostId);
+        await gate;
+        return { stdout: "" };
+      },
+    });
+    const pending = server.request("POST", "/search", {
+      sources: ["journal"],
+      runId: "run-12345678",
+    });
+    await new Promise((r) => setTimeout(r, 50));
+    const cancel = await server.request("POST", "/search/cancel", {
+      runId: "run-12345678",
+    });
+    expect(cancel.body).toEqual({ cancelled: true });
+    release();
+    const res = await pending;
+    expect(res.status).toBe(200);
+    expect(res.body.cancelled).toBe(true);
+    expect(reached.size).toBeLessThan(8);
+  });
+
+  it("does nothing for a run it does not know", async () => {
+    server = await startServer({});
+    const res = await server.request("POST", "/search/cancel", {
+      runId: "nope-12345678",
+    });
+    expect(res.body).toEqual({ cancelled: false });
+  });
+});
