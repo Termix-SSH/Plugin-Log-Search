@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "tables": {
+    "saved": {
+      "columns": {
+        "id": {
+          "type": "id",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "createdBy": {
+          "type": "refUser",
+          "length": 255,
+          "notNull": true
+        },
+        "name": {
+          "type": "varchar",
+          "length": 100,
+          "notNull": true
+        },
+        "search": {
+          "type": "text",
+          "notNull": true
+        },
+        "alertEnabled": {
+          "type": "boolean",
+          "notNull": true,
+          "defaultValue": false
+        },
+        "alertEvery": {
+          "type": "integer",
+          "notNull": true,
+          "defaultValue": 5
+        },
+        "alertMin": {
+          "type": "integer",
+          "notNull": true,
+          "defaultValue": 1
+        },
+        "alertChannels": {
+          "type": "text"
+        },
+        "alertActive": {
+          "type": "boolean",
+          "notNull": true,
+          "defaultValue": false
+        },
+        "lastRunAt": {
+          "type": "timestamp"
+        },
+        "lastMatchAt": {
+          "type": "timestamp"
+        },
+        "lastCount": {
+          "type": "integer"
+        },
+        "lastError": {
+          "type": "text"
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "notNull": true,
+          "defaultNow": true
+        }
+      },
+      "indexes": [
+        {
+          "name": "idx_p_log_search_saved_created_by",
+          "columns": [
+            "createdBy"
+          ]
+        }
+      ]
+    }
+  }
+}

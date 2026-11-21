@@ -1,6 +1,31 @@
 {
   "$schema": "https://raw.githubusercontent.com/Termix-SSH/Termix/main/scripts/authz/authz.schema.json",
-  "seed": [],
+  "seed": [
+    {
+      "as": "owner",
+      "method": "POST",
+      "path": "/plugin-api/log-search/saved",
+      "body": {
+        "name": "authz-saved",
+        "search": {
+          "query": "x",
+          "sources": ["files"],
+          "range": "1h"
+        },
+        "alert": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "as": "owner",
+      "method": "GET",
+      "path": "/plugin-api/log-search/saved",
+      "capture": {
+        "log-search.saved": "saved.-1.id"
+      }
+    }
+  ],
   "routes": {
     "GET /plugin-api/log-search/hosts": {
       "access": "user",
@@ -23,6 +48,80 @@
       },
       "filtered": true,
       "note": "Searches only hosts the caller may see"
+    },
+    "GET /plugin-api/log-search/saved": {
+      "access": "user",
+      "permission": "log-search.use",
+      "filtered": true,
+      "note": "Lists only the caller's own saved searches"
+    },
+    "POST /plugin-api/log-search/saved": {
+      "access": "user",
+      "permission": "log-search.use"
+    },
+    "PUT /plugin-api/log-search/saved/:id": {
+      "access": "user",
+      "permission": "log-search.use",
+      "resource": {
+        "kind": "own",
+        "fixture": "log-search.saved"
+      },
+      "params": {
+        "id": "log-search.saved"
+      },
+      "body": {
+        "name": "authz"
+      }
+    },
+    "DELETE /plugin-api/log-search/saved/:id": {
+      "access": "user",
+      "permission": "log-search.use",
+      "resource": {
+        "kind": "own",
+        "fixture": "log-search.saved"
+      },
+      "params": {
+        "id": "log-search.saved"
+      },
+      "destructive": true
+    },
+    "POST /plugin-api/log-search/saved/:id/run": {
+      "access": "user",
+      "permission": "log-search.use",
+      "resource": {
+        "kind": "own",
+        "fixture": "log-search.saved"
+      },
+      "params": {
+        "id": "log-search.saved"
+      }
+    },
+    "GET /plugin-api/log-search/channels": {
+      "access": "user",
+      "permission": "log-search.use",
+      "filtered": true,
+      "note": "Lists only the caller's own alert channels"
+    },
+    "WS /plugin-ws/log-search/follow": {
+      "access": "user",
+      "permission": "log-search.use",
+      "resource": {
+        "kind": "host",
+        "min": "connect",
+        "key": "hostId"
+      },
+      "filtered": true,
+      "send": [
+        {
+          "type": "connect",
+          "data": {
+            "hostIds": ["{{host}}"],
+            "sources": ["journal"]
+          }
+        }
+      ],
+      "refuseReply": "No host to follow|Authentication required",
+      "note": "Follows only hosts the caller may connect to"
     }
   }
 }

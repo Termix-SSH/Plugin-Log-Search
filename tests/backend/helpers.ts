@@ -1,8 +1,10 @@
 import http from "node:http";
+import { fileURLToPath } from "node:url";
 import type { AddressInfo } from "node:net";
 import express, { type Router } from "express";
 import {
   createMockCtx,
+  createTestDb,
   type MockPluginContext,
 } from "@termix-ssh/plugin-sdk/testing";
 import type {
@@ -14,6 +16,7 @@ import type { PluginManifest } from "@termix-ssh/plugin-sdk/manifest";
 import manifestJson from "../../manifest.json";
 
 export const manifest = manifestJson as unknown as PluginManifest;
+export const pluginDir = fileURLToPath(new URL("../..", import.meta.url));
 
 export interface Call {
   hostId: number;
@@ -63,7 +66,14 @@ export async function startServer(
   } = {},
 ): Promise<TestServer> {
   let router: Router | null = null;
+  const db = await createTestDb(pluginDir);
+  for (const id of ["user-1", "user-2"]) {
+    db.sqlite
+      .prepare("INSERT INTO users (id, username, is_admin) VALUES (?, ?, 0)")
+      .run(id, id);
+  }
   const mock = createMockCtx({
+    db: db.database,
     sandbox: true,
     pluginId: manifest.id,
     manifest,
@@ -134,7 +144,10 @@ export async function startServer(
     },
     close: () =>
       new Promise<void>((resolve) => {
-        server.close(() => resolve());
+        server.close(() => {
+          db.close();
+          resolve();
+        });
       }),
   };
 }

@@ -53,14 +53,48 @@ const result = {
 
 const post = vi.fn(async () => ({ data: result }));
 const api = {
-  get: vi.fn(async () => ({
-    data: {
-      hosts: [
-        { id: 1, name: "alpha", folder: null },
-        { id: 2, name: "beta", folder: null },
-      ],
-    },
-  })),
+  get: vi.fn(async (path: string) =>
+    path === "/saved"
+      ? {
+          data: {
+            saved: [
+              {
+                id: 7,
+                name: "Timeouts",
+                search: {
+                  query: "timed out",
+                  regex: false,
+                  caseSensitive: false,
+                  hostIds: [1],
+                  sources: ["journal"],
+                  range: "6h",
+                  level: "error",
+                  origin: "",
+                },
+                alert: {
+                  enabled: true,
+                  everyMinutes: 5,
+                  minMatches: 1,
+                  channelIds: [],
+                },
+                alertActive: false,
+                lastRunAt: null,
+                lastMatchAt: null,
+                lastCount: null,
+                lastError: null,
+              },
+            ],
+          },
+        }
+      : {
+          data: {
+            hosts: [
+              { id: 1, name: "alpha", folder: null },
+              { id: 2, name: "beta", folder: null },
+            ],
+          },
+        },
+  ),
   post,
   put: vi.fn(async () => ({ data: {} })),
   delete: vi.fn(async () => ({ data: {} })),
@@ -88,6 +122,27 @@ describe(`${manifest.id} frontend`, () => {
       "/search",
       expect.objectContaining({ query: "timed", sources: expect.any(Array) }),
     );
+  });
+});
+
+describe("saved searches", () => {
+  it("fills the search from a saved one", async () => {
+    Object.assign(window.HTMLElement.prototype, {
+      hasPointerCapture: () => false,
+      releasePointerCapture: () => {},
+      scrollIntoView: () => {},
+    });
+    rendered = await renderWithApp(plugin, { manifest, locales, api });
+    rendered.renderTab("log-search", { isVisible: true });
+    const picker = await screen.findByRole("combobox", { name: "Saved" });
+    fireEvent.pointerDown(picker, { button: 0, pointerType: "mouse" });
+    fireEvent.click(
+      await screen.findByRole("option", { name: "Timeouts (alert on)" }),
+    );
+    expect(
+      (screen.getByPlaceholderText("Search logs") as HTMLInputElement).value,
+    ).toBe("timed out");
+    expect(screen.getByText("Edit saved")).toBeTruthy();
   });
 });
 

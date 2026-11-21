@@ -17,7 +17,7 @@ describe("operations", () => {
     if (registered) {
       for (const id of declared) expect(registered.has(id)).toBe(true);
     } else {
-      expect(declared).toEqual(["log-search.search"]);
+      expect(declared).toEqual(["log-search.search", "log-search.saved-run"]);
     }
     await server.close();
   });

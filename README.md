@@ -18,7 +18,7 @@
 
 ## Overview
 
-Log Search reads logs over SSH when you search. Pick your hosts, type what to look for and see one merged list of matching lines from the journal, log files and Docker containers.
+Log Search reads logs over SSH when you search. Pick your hosts, type what to look for and see one merged list of matching lines from the journal, log files and Docker containers, follow new lines live, or save a search and get an alert when it finds something.
 
 Read the [docs](https://docs.termix.site/plugins/log-search) to set it up and use it.
 
@@ -28,8 +28,10 @@ Read the [docs](https://docs.termix.site/plugins/log-search) to set it up and us
 
 - Search the systemd journal, log files and Docker logs on many hosts at once
 - Plain text or regular expression search with a time range and level filter
+- Follow new lines live on up to 10 hosts, with the same filters
+- Save searches and get an alert when one finds matching lines
 - One merged result list with a status line for every host
-- Live search over SSH, nothing is stored or indexed
+- Live search over SSH, no log lines are stored or indexed
 - A search action for Operations, the assistant and the CLI
 
 <br />
