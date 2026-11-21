@@ -8,7 +8,7 @@
     "hostsSome_one": "{{count}} host",
     "hostsSome_few": "{{count}} hosty",
     "hostsSome_many": "{{count}} hostów",
-    "hostsSome_other": "{{count}} hosta",
+    "hostsSome_other": "{{count}} hostów",
     "hostsAll": "Wszystkie hosty ({{count}})"
   },
   "search": {

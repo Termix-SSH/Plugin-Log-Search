@@ -125,6 +125,24 @@ describe(`${manifest.id} frontend`, () => {
   });
 });
 
+describe("sandboxed frame", () => {
+  // A frame without allow-forms never fires submit, so search must not use a form.
+  it("searches on Enter and renders no form", async () => {
+    post.mockClear();
+    rendered = await renderWithApp(plugin, { manifest, locales, api });
+    rendered.renderTab("log-search", { isVisible: true });
+    const input = await screen.findByPlaceholderText("Search logs");
+    expect(document.querySelector("form")).toBeNull();
+    fireEvent.change(input, { target: { value: "session" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(await screen.findByText("nginx.service")).toBeTruthy();
+    expect(post).toHaveBeenCalledWith(
+      "/search",
+      expect.objectContaining({ query: "session" }),
+    );
+  });
+});
+
 describe("saved searches", () => {
   it("fills the search from a saved one", async () => {
     Object.assign(window.HTMLElement.prototype, {

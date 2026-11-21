@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+### Fixed
+
+- Search and Enter did nothing in Chrome, so no log lines showed up
+
 ## 1.2.0
 
 ### Added

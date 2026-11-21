@@ -5,8 +5,8 @@
     "searchFailed": "Otsing ebaõnnestus.",
     "clearHosts": "Kõik peremehed",
     "noHosts": "Ühelgi peremeel ei ole Logiotsingut sisse lülitatud.",
-    "hostsSome_one": "{{count}} pereme",
-    "hostsSome_other": "{{count}} peremat",
+    "hostsSome_one": "{{count}} peremeesmasin",
+    "hostsSome_other": "{{count}} peremeesmasinat",
     "hostsAll": "Kõik peremehed ({{count}})"
   },
   "search": {

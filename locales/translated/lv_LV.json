@@ -5,7 +5,7 @@
     "searchFailed": "Meklēšana neizdevās.",
     "clearHosts": "Visi mezgli",
     "noHosts": "Nav neviena mezgla, kurā ir ieslēgta žurnālu meklēšana.",
-    "hostsSome_zero": "{{count}} hostu",
+    "hostsSome_zero": "0 hosti",
     "hostsSome_one": "{{count}} hosts",
     "hostsSome_other": "{{count}} hosti",
     "hostsAll": "Visi mezgli ({{count}})"

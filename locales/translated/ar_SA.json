@@ -5,12 +5,12 @@
     "searchFailed": "فشل البحث.",
     "clearHosts": "جميع المضيفين",
     "noHosts": "لم يتم تفعيل بحث السجلات لأي مضيف.",
-    "hostsSome_zero": "لا يوجد مضيف",
-    "hostsSome_one": "مضيف واحد",
-    "hostsSome_two": "مضيفان",
-    "hostsSome_few": "{{count}} مضيفات",
-    "hostsSome_many": "{{count}} مضيفاً",
-    "hostsSome_other": "{{count}} مضيف",
+    "hostsSome_zero": "0 أجهزة",
+    "hostsSome_one": "جهاز واحد",
+    "hostsSome_two": "جهازان",
+    "hostsSome_few": "{{count}} أجهزة",
+    "hostsSome_many": "{{count}} جهازًا",
+    "hostsSome_other": "{{count}} جهاز",
     "hostsAll": "جميع المضيفين ({{count}})"
   },
   "search": {

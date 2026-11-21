@@ -276,23 +276,32 @@ export function LogsTab({ isVisible }: { isVisible: boolean }) {
           ) : undefined
         }
         toolbar={
-          <form
-            className="flex min-w-0 flex-1 flex-col gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void run();
-            }}
-          >
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex gap-2">
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    !e.nativeEvent.isComposing &&
+                    !busy &&
+                    !followReq
+                  ) {
+                    e.preventDefault();
+                    void run();
+                  }
+                }}
                 placeholder={t("search.placeholder")}
                 aria-label={t("search.placeholder")}
                 maxLength={200}
                 className="flex-1"
               />
-              <Button type="submit" disabled={busy || !!followReq}>
+              <Button
+                type="button"
+                disabled={busy || !!followReq}
+                onClick={() => void run()}
+              >
                 <Search /> {t("search.run")}
               </Button>
               <Button
@@ -425,7 +434,7 @@ export function LogsTab({ isVisible }: { isVisible: boolean }) {
                 ) : null}
               </div>
             ) : null}
-          </form>
+          </div>
         }
       >
         {editing ? (
